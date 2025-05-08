@@ -1,5 +1,3 @@
-Here's a basic `README.md` file tailored to your project structure, which appears to have a Python backend (possibly using Gurobi for optimization) and a Next.js + TypeScript frontend using Docker:
-
 # Transportation Problem
 
 This is a full-stack application that integrates a Python backend (using Gurobi for optimization) and a Next.js frontend. It is containerized with Docker for easy deployment and development.
