@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - ./backend/gurobi.lic:/opt/gurobi/gurobi.lic:ro
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+      - GRB_LICENSE_FILE=/opt/gurobi/gurobi.lic
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    env_file:
+      - ./frontend/.env.docker
+    depends_on:
+      - backend
+

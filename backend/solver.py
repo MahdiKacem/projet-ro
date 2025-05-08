@@ -12,7 +12,7 @@ def solve_transportation(warehouses, clients, supply, demand, cost_matrix):
     for w in warehouses:
         model.addConstr(sum(x[w, c] for c in clients) <= supply[w], f"Supply_{w}")
     for c in clients:
-        model.addConstr(sum(x[w, c] for w in warehouses) >= demand[c], f"Demand_{c}")
+        model.addConstr(sum(x[w, c] for w in warehouses) == demand[c], f"Demand_{c}")
 
     model.optimize()
 
