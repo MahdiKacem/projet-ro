@@ -1,11 +1,16 @@
-# === Global ===
+# Ignore all .env files in root and frontend
+.env
+.env.*
+!.env.local.example
+!.env.docker
+
+# Keep existing rules for the backend, Docker, etc.
 *.log
 *.pyc
 *.pyo
 *.pyd
 __pycache__/
 
-# === Python Backend ===
 backend/__pycache__/
 backend/*.pyc
 backend/.pytest_cache/
@@ -13,11 +18,9 @@ backend/.mypy_cache/
 backend/.vscode/
 backend/gurobi.lic
 
-# Virtualenv
 venv/
 env/
 
-# === Frontend ===
 frontend/node_modules/
 frontend/.next/
 frontend/.env*
@@ -25,21 +28,12 @@ frontend/.eslintcache
 frontend/.turbo/
 frontend/npm-debug.log*
 
-# === Docker ===
 **/Dockerfile
 docker-compose.override.yml
 docker-compose.dev.yml
 
-# === OS Files ===
 .DS_Store
 Thumbs.db
 
-# === IDE Files ===
 .vscode/
 .idea/
-
-# Ignore all .env files
-.env
-.env.*
-!.env.local.example
-!.env.docker

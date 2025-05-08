@@ -69,6 +69,7 @@ Install dependencies manually (if not using Docker):
 ```bash
 cd backend
 pip install -r requirements.txt
+python app.py
 ```
 
 ---

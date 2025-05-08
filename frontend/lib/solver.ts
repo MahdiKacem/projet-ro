@@ -8,6 +8,7 @@ export async function solveTransportation(
   costMatrix: Record<string, number>,
 ) {
   try {
+    console.log(process.env.NEXT_PUBLIC_API_URL);
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/solve`, {
       method: 'POST',
       headers: {
