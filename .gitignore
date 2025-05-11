@@ -1,0 +1,36 @@
+# Fichiers et dossiers Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+*.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Fichiers de configuration d'IDE
+.idea/
+.vscode/
+*.iml
+
+# Fichiers de logs
+*.log
+
+# Fichiers de dépendances
+*.egg-info/
+dist/
+build/
+
+# Fichiers spécifiques à Gurobi
+gurobi.log
+
+# Autres fichiers temporaires
+*.tmp
+*.swp
+*.bak
+*.orig
+.DS_Store
+Thumbs.db
