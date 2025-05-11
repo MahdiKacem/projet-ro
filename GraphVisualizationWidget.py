@@ -1,7 +1,7 @@
 from math import atan2, cos, radians, sin
 
 from PyQt5.QtWidgets import (QGraphicsView, QGraphicsScene,
-                             QGraphicsEllipseItem, QGraphicsTextItem, QGraphicsLineItem)
+                             QGraphicsEllipseItem, QGraphicsTextItem, QGraphicsLineItem, QGraphicsRectItem)
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QFont
 from PyQt5.QtCore import Qt, QPointF
 
@@ -17,29 +17,50 @@ class GraphVisualizationWidget(QGraphicsView):
         self.edges = []
         self.edgeItems = {}
 
-    def add_node(self, node_name, node_type, index):
-        """Add a node to the graph (warehouse or client)."""
+    def add_node(self, node_name, node_type, index, value):
+        """Add a node to the graph (warehouse or client) with an optional supply/demand value."""
         if node_name in self.nodes:
             return
-        radius = 20
-        circle = QGraphicsEllipseItem(-radius, -radius, 2 * radius, 2 * radius)
-        color = "#0081A7" if node_type == "Warehouse" else "#F07167"
-        circle.setBrush(QBrush(QColor(color)))
-        circle.setPen(QPen(Qt.NoPen))
-        circle.setZValue(1)
-        self.scene.addItem(circle)
 
+        # Define shape and color based on node type
+        if node_type == "Warehouse":
+            shape = QGraphicsRectItem(-20, -20, 40, 40)  # Rectangle for warehouse
+            color = "#0081A7"
+        else:
+            shape = QGraphicsEllipseItem(-20, -20, 40, 40)  # Circle for client
+            color = "#F07167"
+
+        # Set shape properties
+        shape.setBrush(QBrush(QColor(color)))
+        shape.setPen(QPen(Qt.NoPen))
+        shape.setZValue(1)
+        self.scene.addItem(shape)
+
+        # Add node name as text inside the shape
         text = QGraphicsTextItem(node_name)
         text.setDefaultTextColor(QColor("#FFFFFC"))
         text.setFont(QFont("Segoe UI", 10, QFont.Bold))
-        text.setParentItem(circle)
+        text.setParentItem(shape)  # Attach text to the shape
         text.setPos(-text.boundingRect().width() / 2, -text.boundingRect().height() / 2)
 
         # Position nodes in a bipartite layout
         x = -200 if node_type == "Warehouse" else 200
         y = index * 100 - 200
-        circle.setPos(x, y)
-        self.nodes[node_name] = circle
+        shape.setPos(x, y)
+
+        # Add supply/demand value as a separate text item BELOW the node
+        value_text = QGraphicsTextItem(f"{value}")
+        value_text.setDefaultTextColor(QColor("#D1D1D1"))
+        value_text.setFont(QFont("Segoe UI", 9))
+        # Attach the value text to the shape to move together
+        value_text.setParentItem(shape)  
+        # Position the value text slightly below the shape
+        value_text.setPos(-value_text.boundingRect().width() / 2, 25)  
+        self.scene.addItem(value_text)
+
+        # Store the node and its associated text items
+        self.nodes[node_name] = shape
+
 
     def add_edge(self, warehouse, client, cost):
         """Add an edge from warehouse to client."""
@@ -125,11 +146,11 @@ class GraphVisualizationWidget(QGraphicsView):
                         qty_text = f"{int(qty)}" if qty.is_integer() else f"{qty:.2f}"
                         # Show both cost and quantity
                         original_cost = original_texts.get(edge, "0")
-                        item.setText(f"{original_cost} ({qty_text})")
+                        item.setPlainText(f"{original_cost} ({qty_text})")
                     elif isinstance(item, QGraphicsTextItem):
                         # Restore original cost if qty is 0
                         item.setDefaultTextColor(QColor("#FFFFFF"))
-                        item.setText(original_texts.get(edge, "0"))
+                        item.setPlainText(original_texts.get(edge, "0"))
             except Exception as e:
                 print(f"Error in GraphVisualizationWidget.highlight_solution for edge {edge}: {e}")
 

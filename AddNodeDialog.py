@@ -2,9 +2,9 @@ from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout,
                              QComboBox, QLabel, QLineEdit, QPushButton)
 
 class AddNodeDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, node_type, node_params, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Add Warehouse or Client")
+        self.setWindowTitle(f"Add {node_type}")
         self.setMinimumWidth(300)
         self.setStyleSheet("""
             QDialog { background-color: #2C2F33; color: white; border-radius: 15px; }
@@ -25,12 +25,6 @@ class AddNodeDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
-        # Node type selection
-        self.type_combo = QComboBox()
-        self.type_combo.addItems(["Warehouse", "Client"])
-        layout.addWidget(QLabel("Node Type:"))
-        layout.addWidget(self.type_combo)
-
         # Node name input
         self.node_name_input = QLineEdit()
         self.node_name_input.setPlaceholderText("Enter name")
@@ -39,8 +33,8 @@ class AddNodeDialog(QDialog):
 
         # Capacity or demand input
         self.capacity_input = QLineEdit()
-        self.capacity_input.setPlaceholderText("Enter supply (warehouse) or demand (client)")
-        layout.addWidget(QLabel("Supply/Demand:"))
+        self.capacity_input.setPlaceholderText(f"Enter {node_params}")
+        layout.addWidget(QLabel(f"{node_params}:"))
         layout.addWidget(self.capacity_input)
 
         # Buttons
@@ -54,6 +48,5 @@ class AddNodeDialog(QDialog):
         layout.addLayout(buttons_layout)
 
     def get_node_data(self):
-        """Return node type, name, and capacity/demand."""
-        return (self.type_combo.currentText(), self.node_name_input.text().strip(),
-                self.capacity_input.text().strip())
+        """Return the name and capacity/demand."""
+        return (self.node_name_input.text().strip(), self.capacity_input.text().strip())

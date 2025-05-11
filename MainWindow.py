@@ -33,8 +33,12 @@ class MainWindow(QMainWindow):
 
         # Buttons
         buttons_layout = QHBoxLayout()
-        self.add_node_btn = RoundedButton("Add Warehouse/Client")
-        self.add_node_btn.clicked.connect(self.show_add_node_dialog)
+        self.add_node_btn = RoundedButton("Add Warehouse")
+        self.add_node_btn.clicked.connect(self.show_add_warehouse_dialog)
+        buttons_layout.addWidget(self.add_node_btn)
+
+        self.add_node_btn = RoundedButton("Add Client")
+        self.add_node_btn.clicked.connect(self.show_add_client_dialog)
         buttons_layout.addWidget(self.add_node_btn)
 
         self.add_cost_btn = RoundedButton("Add Cost")
@@ -115,7 +119,7 @@ class MainWindow(QMainWindow):
         else:
             self.clients[node_name] = capacity
             self.matrix_widget.add_client(node_name)
-        self.graph_view.add_node(node_name, node_type, index)
+        self.graph_view.add_node(node_name, node_type, index, capacity)
 
     def add_cost(self, warehouse, client, cost):
         """Add a transportation cost."""
@@ -129,15 +133,27 @@ class MainWindow(QMainWindow):
         self.matrix_widget.add_cost(warehouse, client, str(cost))
         self.graph_view.add_edge(warehouse, client, cost)
 
-    def show_add_node_dialog(self):
-        """Show dialog to add a warehouse or client."""
-        dialog = AddNodeDialog(self)
+    def show_add_warehouse_dialog(self):
+        """Show dialog to add a warehouse."""
+        dialog = AddNodeDialog("Warehouse", "Capacity", self)
         if dialog.exec_():
-            node_type, node_name, capacity = dialog.get_node_data()
+            node_name, capacity = dialog.get_node_data()
             if node_name and capacity:
-                index = len(self.warehouses) if node_type == "Warehouse" else len(self.clients)
-                self.add_node(node_type, node_name, capacity, index)
-                print(f"Added {node_type.lower()}: {node_name}, Capacity: {capacity}")
+                index = len(self.warehouses)
+                self.add_node("Warehouse", node_name, capacity, index)
+                self.graph_view.add_node(node_name, "Warehouse", index, capacity)
+                print(f"Added warehouse: {node_name}, Capacity: {capacity}")
+
+    def show_add_client_dialog(self):
+        """Show dialog to add a client."""
+        dialog = AddNodeDialog("Client", "Demand", self)
+        if dialog.exec_():
+            node_name, demand = dialog.get_node_data()
+            if node_name and demand:
+                index = len(self.clients)
+                self.add_node("Client", node_name, demand, index)
+                self.graph_view.add_node(node_name, "Client", index, demand)
+                print(f"Added client: {node_name}, Demand: {demand}")
 
     def show_add_cost_dialog(self):
         """Show dialog to add a transportation cost."""
