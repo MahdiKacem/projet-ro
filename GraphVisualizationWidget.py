@@ -19,7 +19,8 @@ class GraphVisualizationWidget(QGraphicsView):
 
     def add_node(self, node_name, node_type, index, value):
         """Add a node to the graph (warehouse or client) with an optional supply/demand value."""
-        if node_name in self.nodes:
+        if node_name in self.nodes: #or len(self.nodes) >= 20:
+            # Prevent adding more than 10 nodes or duplicate names
             return
 
         # Define shape and color based on node type
@@ -93,7 +94,9 @@ class GraphVisualizationWidget(QGraphicsView):
         text = QGraphicsTextItem(str(weight))
         text.setDefaultTextColor(Qt.white)
         text.setFont(QFont("Segoe UI", 10))
-        text.setPos(mid.x(), mid.y() - 10)
+        x_offset = 50 if dx > 0 else -50  # Adjust to the right if moving right
+        y_offset = -5 if dy > 0 else 5  # Adjust downward if moving upward
+        text.setPos(mid.x() + x_offset, mid.y() + y_offset)
         self.scene.addItem(text)
         items_created.append(text)
 

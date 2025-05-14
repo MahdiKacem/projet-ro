@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout,
-                             QLabel, QFrame, QWidget)
+                             QLabel, QFrame, QWidget, QSizePolicy)
 from PyQt5.QtCore import Qt
 from gurobipy import Model, GRB
 from RoundedButton import RoundedButton
@@ -34,20 +34,24 @@ class MainWindow(QMainWindow):
         # Buttons
         buttons_layout = QHBoxLayout()
         self.add_node_btn = RoundedButton("Add Warehouse")
+        self.add_node_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.add_node_btn.clicked.connect(self.show_add_warehouse_dialog)
-        buttons_layout.addWidget(self.add_node_btn)
+        buttons_layout.addWidget(self.add_node_btn, stretch=1)
 
         self.add_node_btn = RoundedButton("Add Client")
+        self.add_node_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.add_node_btn.clicked.connect(self.show_add_client_dialog)
-        buttons_layout.addWidget(self.add_node_btn)
+        buttons_layout.addWidget(self.add_node_btn, stretch=1)
 
         self.add_cost_btn = RoundedButton("Add Cost")
+        self.add_node_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.add_cost_btn.clicked.connect(self.show_add_cost_dialog)
-        buttons_layout.addWidget(self.add_cost_btn)
+        buttons_layout.addWidget(self.add_cost_btn, stretch=1)
 
         self.solve_btn = RoundedButton("Solve")
+        self.add_node_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.solve_btn.clicked.connect(self.solve_transportation_problem)
-        buttons_layout.addWidget(self.solve_btn)
+        buttons_layout.addWidget(self.solve_btn, stretch=1)
 
         buttons_layout.addStretch()
         left_panel_layout.addLayout(buttons_layout)
@@ -77,6 +81,22 @@ class MainWindow(QMainWindow):
         right_panel.setObjectName("rightPanel")
         right_panel_layout = QVBoxLayout(right_panel)
         right_panel_layout.setContentsMargins(15, 15, 15, 15)
+        # Result container
+        result_container = QFrame()
+        result_container.setObjectName("resultContainer")
+        result_container_layout = QVBoxLayout(result_container)
+        result_container_layout.setContentsMargins(15, 15, 15, 15)
+
+        result_label = QLabel("Result")
+        result_label.setAlignment(Qt.AlignCenter)
+        result_label.setStyleSheet("font-size: 24px; font-weight: bold;")
+        result_container_layout.addWidget(result_label)
+
+        self.solution_label = QLabel("")
+        self.solution_label.setStyleSheet("font-size: 16px; color: #FFFFFF;")
+        result_container_layout.addWidget(self.solution_label)
+        left_panel_layout.addWidget(result_container)
+
 
         self.graph_view = GraphVisualizationWidget()
         right_panel_layout.addWidget(self.graph_view)
@@ -100,6 +120,12 @@ class MainWindow(QMainWindow):
                 padding: 8px; color: white;
             }
             QPushButton:hover { background-color: #4752C4; }
+            QFrame#resultContainer {
+                background-color: #2C2F33; 
+                border-radius: 15px; 
+                border: 1px solid #3E4246;
+            }
+
         """)
 
     def add_node(self, node_type, node_name, capacity, index):
