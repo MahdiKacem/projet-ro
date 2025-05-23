@@ -58,6 +58,5 @@ class AddCostDialog(QDialog):
         layout.addLayout(buttons_layout)
 
     def get_cost_data(self):
-        """Return selected warehouse, client, and cost."""
         return (self.warehouse_combo.currentText(), self.client_combo.currentText(),
                 self.cost_input.text().strip())

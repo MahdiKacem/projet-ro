@@ -48,5 +48,4 @@ class AddNodeDialog(QDialog):
         layout.addLayout(buttons_layout)
 
     def get_node_data(self):
-        """Return the name and capacity/demand."""
         return (self.node_name_input.text().strip(), self.capacity_input.text().strip())

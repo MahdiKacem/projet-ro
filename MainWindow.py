@@ -23,7 +23,6 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(15)
 
-        # Left panel
         left_panel = QFrame()
         left_panel.setObjectName("leftPanel")
         left_panel.setMinimumWidth(550)
@@ -31,7 +30,6 @@ class MainWindow(QMainWindow):
         left_panel_layout.setContentsMargins(15, 15, 15, 15)
         left_panel_layout.setSpacing(15)
 
-        # Buttons
         buttons_layout = QHBoxLayout()
         self.add_node_btn = RoundedButton("Add Warehouse")
         self.add_node_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -56,7 +54,6 @@ class MainWindow(QMainWindow):
         buttons_layout.addStretch()
         left_panel_layout.addLayout(buttons_layout)
 
-        # Matrix container
         matrix_container = QFrame()
         matrix_container.setObjectName("matrixContainer")
         matrix_container_layout = QVBoxLayout(matrix_container)
@@ -76,12 +73,11 @@ class MainWindow(QMainWindow):
 
         left_panel_layout.addWidget(matrix_container)
 
-        # Right panel
         right_panel = QFrame()
         right_panel.setObjectName("rightPanel")
         right_panel_layout = QVBoxLayout(right_panel)
         right_panel_layout.setContentsMargins(15, 15, 15, 15)
-        # Result container
+
         result_container = QFrame()
         result_container.setObjectName("resultContainer")
         result_container_layout = QVBoxLayout(result_container)
@@ -129,7 +125,6 @@ class MainWindow(QMainWindow):
         """)
 
     def add_node(self, node_type, node_name, capacity, index):
-        """Add a warehouse or client to the system."""
         if node_name in self.warehouses or node_name in self.clients:
             return
         try:
@@ -148,7 +143,6 @@ class MainWindow(QMainWindow):
         self.graph_view.add_node(node_name, node_type, index, capacity)
 
     def add_cost(self, warehouse, client, cost):
-        """Add a transportation cost."""
         try:
             cost = int(cost)
             if cost < 0:
@@ -160,7 +154,6 @@ class MainWindow(QMainWindow):
         self.graph_view.add_edge(warehouse, client, cost)
 
     def show_add_warehouse_dialog(self):
-        """Show dialog to add a warehouse."""
         dialog = AddNodeDialog("Warehouse", "Capacity", self)
         if dialog.exec_():
             node_name, capacity = dialog.get_node_data()
@@ -171,7 +164,6 @@ class MainWindow(QMainWindow):
                 print(f"Added warehouse: {node_name}, Capacity: {capacity}")
 
     def show_add_client_dialog(self):
-        """Show dialog to add a client."""
         dialog = AddNodeDialog("Client", "Demand", self)
         if dialog.exec_():
             node_name, demand = dialog.get_node_data()
@@ -182,7 +174,6 @@ class MainWindow(QMainWindow):
                 print(f"Added client: {node_name}, Demand: {demand}")
 
     def show_add_cost_dialog(self):
-        """Show dialog to add a transportation cost."""
         dialog = AddCostDialog(self, self.warehouses.keys(), self.clients.keys())
         if dialog.exec_():
             warehouse, client, cost = dialog.get_cost_data()
@@ -191,31 +182,26 @@ class MainWindow(QMainWindow):
                 print(f"Added cost: {warehouse} -> {client}, Cost: {cost}")
 
     def solve_transportation_problem(self):
-        """Solve the transportation problem using Gurobi."""
-
-        # Get cost matrix
         cost = self.matrix_widget.get_cost_matrix()
 
-        # Create Gurobi model
         model = Model("Transport_Optimization")
-        x = model.addVars(self.warehouses.keys(), self.clients.keys(),
-                         vtype=GRB.INTEGER, lb=0, name="x")
+        x = model.addVars(self.warehouses.keys(), 
+                          self.clients.keys(),
+                          vtype=GRB.INTEGER, 
+                          lb=0, 
+                          name="x")
         model.setObjective(
             sum(cost.get((w, c), 0) * x[w, c] for w in self.warehouses for c in self.clients),
             GRB.MINIMIZE)
 
-        # Supply constraints
         for w in self.warehouses:
             model.addConstr(sum(x[w, c] for c in self.clients) <= self.warehouses[w], f"Supply_{w}")
 
-        # Demand constraints
         for c in self.clients:
             model.addConstr(sum(x[w, c] for w in self.warehouses) >= self.clients[c], f"Demand_{c}")
 
-        # Optimize
         model.optimize()
 
-        # Display results
         if model.status == GRB.OPTIMAL:
             solution = {(w, c): x[w, c].x for w in self.warehouses for c in self.clients if x[w, c].x > 0}
             message = [f"Optimal Solution Found: Total Cost = {model.objVal:.2f}"]

@@ -22,33 +22,28 @@ class MatrixWidget(QTableWidget):
         """)
 
     def add_warehouse(self, warehouse_name):
-        """Add a warehouse (new row)."""
         if warehouse_name in self.warehouses:
             return
         self.warehouses.append(warehouse_name)
         self.setRowCount(len(self.warehouses))
         self.setVerticalHeaderItem(len(self.warehouses) - 1, QTableWidgetItem(warehouse_name))
-        # Fill new row with "∞"
         for j in range(self.columnCount()):
             item = QTableWidgetItem("∞")
             item.setFlags(item.flags() & ~Qt.ItemIsEditable)
             self.setItem(len(self.warehouses) - 1, j, item)
 
     def add_client(self, client_name):
-        """Add a client (new column)."""
         if client_name in self.clients:
             return
         self.clients.append(client_name)
         self.setColumnCount(len(self.clients))
         self.setHorizontalHeaderItem(len(self.clients) - 1, QTableWidgetItem(client_name))
-        # Fill new column with "∞"
         for i in range(self.rowCount()):
             item = QTableWidgetItem("∞")
             item.setFlags(item.flags() & ~Qt.ItemIsEditable)
             self.setItem(i, len(self.clients) - 1, item)
 
     def add_cost(self, warehouse, client, cost):
-        """Add a transportation cost to the matrix."""
         if warehouse not in self.warehouses or client not in self.clients:
             return
         i = self.warehouses.index(warehouse)
@@ -58,7 +53,6 @@ class MatrixWidget(QTableWidget):
         self.setItem(i, j, item)
 
     def update_solution(self, solution):
-        # Verify table dimensions
         if self.rowCount() != len(self.warehouses) or self.columnCount() != len(self.clients):
             print(
                 f"Warning: Table dimensions mismatch. Rows: {self.rowCount()}/{len(self.warehouses)}, Columns: {self.columnCount()}/{len(self.clients)}")
@@ -100,7 +94,6 @@ class MatrixWidget(QTableWidget):
                     print(f"Error in MatrixWidget.update_solution at cell ({i}, {j}): {e}")
 
     def get_cost_matrix(self):
-        """Return the cost matrix as a dictionary."""
         cost = {}
         for i in range(self.rowCount()):
             for j in range(self.columnCount()):
